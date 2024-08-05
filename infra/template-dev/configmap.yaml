@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: configmap-customer-service
-data:
-  POSTGRES_DB: "postgres"
-  POSTGRES_HOST: "postgres.caz5uypaugvp.us-east-1.rds.amazonaws.com"

@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: configmap-customer-service
+data:
+  POSTGRES_DB: aws_ssm_db_name
+  POSTGRES_HOST: aws_ssm_db_host
