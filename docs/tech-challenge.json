@@ -1,0 +1,296 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "version": "1.0",
+    "title": "tech-challenge",
+    "description": "API do Tech Challenge",
+    "contact": {
+      "name": "Lucas Cavagnolli",
+      "email": "lucas.cava@hotmail.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:30201",
+      "description": "Desenvolvimento com Kubernetes"
+    }
+  ],
+  "paths": {
+    "/customers": {
+      "post": {
+        "tags": [
+          "Cliente"
+        ],
+        "summary": "Cria Novo Cliente",
+        "description": "Endpoint responsável que cria um novo cliente.",
+        "operationId": "create-customer",
+        "requestBody": {
+          "description": "Post the necessary fields for the API to create a new customer.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "João da Silva"
+                  },
+                  "cpf": {
+                    "type": "string",
+                    "example": "12345678910"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "joao.silva@gmail.com"
+                  }
+                },
+                "required": [
+                  "name",
+                  "cpf",
+                  "email"
+                ]
+              },
+              "examples": {
+                "Criar um cliente": {
+                  "value": {
+                    "name": "Bob Fellow",
+                    "cpf": "12345678910",
+                    "email": "bob.fellow@gmail.com"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Cliente Criado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Customer"
+                },
+                "examples": {
+                  "Novo Cliente": {
+                    "value": {
+                      "id": 12,
+                      "name": "Bob Fellow",
+                      "cpf": "13245678910",
+                      "email": "bob.fellow@gmail.com",
+                      "createAt": "2020-11-18 19:15:00"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400-BadRequest"
+          },
+          "409": {
+            "description": "Email ou CPF já utilizado"
+          },
+          "500": {
+            "$ref": "#/components/responses/500-ServerError"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Cliente"
+        ],
+        "summary": "Listagem de Clientes",
+        "description": "Endpoint responsável que realiza a listagem de clientes.",
+        "operationId": "list-customers",
+        "parameters": [
+          {
+            "name": "cpf",
+            "in": "query",
+            "description": "Filtro por CPF",
+            "schema": {
+              "type": "string",
+              "example": "12345678910"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": [
+                    "array",
+                    "null"
+                  ],
+                  "items": {
+                    "$ref": "#/components/schemas/Customer"
+                  }
+                },
+                "examples": {
+                  "Listagem com um cliente": {
+                    "value": [
+                      {
+                        "id": 142,
+                        "name": "Alice Smith",
+                        "cpf": "12345678910",
+                        "email": "alice.smith@gmail.com",
+                        "createdAt": "2019-08-24 18:00:00"
+                      }
+                    ]
+                  },
+                  "Listagem com nenhum cliente": {
+                    "value": null
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400-BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/404-CustomerNotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/500-ServerError"
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Cliente"
+    }
+  ],
+  "components": {
+    "responses": {
+      "400-BadRequest": {
+        "description": "Bad Request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorSchema"
+            },
+            "examples": {
+              "AdditionalProperties": {
+                "$ref": "#/components/examples/40000-AdditionalProperties"
+              },
+              "MissingProperty": {
+                "$ref": "#/components/examples/40000-MissingProperty"
+              }
+            }
+          }
+        }
+      },
+      "404-CustomerNotFound": {
+        "description": "Customer Not Found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorSchema"
+            },
+            "examples": {
+              "CustomerNotFound": {
+                "$ref": "#/components/examples/40401-CustomerNotFound"
+              }
+            }
+          }
+        }
+      },
+      "500-ServerError": {
+        "description": "Server Error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorSchema"
+            },
+            "examples": {
+              "ServerError": {
+                "$ref": "#/components/examples/50000-ServerError"
+              }
+            }
+          }
+        }
+      }
+    },
+    "examples": {
+      "40000-MissingProperty": {
+        "value": {
+          "code": 40000,
+          "name": "MissingProperty",
+          "message": "Deve ter a propriedade obrigatória 'prop'"
+        }
+      },
+      "40000-AdditionalProperties": {
+        "value": {
+          "code": 40000,
+          "name": "AdditionalProperties",
+          "message": "Não deve ter propriedades adicionais."
+        }
+      },
+      "40401-CustomerNotFound": {
+        "value": {
+          "code": 40401,
+          "name": "CustomerNotFound",
+          "message": "Não foi possível encontrar o cliente."
+        }
+      },
+      "50000-ServerError": {
+        "value": {}
+      }
+    },
+    "schemas": {
+      "Customer": {
+        "type": "object",
+        "title": "Customer",
+        "description": "Representa um cliente",
+        "examples": [
+          {
+            "id": 142,
+            "name": "Alice Smith",
+            "cpf": "12345678910",
+            "email": "alice.smith@gmail.com",
+            "createdAt": "2019-08-24"
+          }
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Identificador único do cliente.",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "description": "Nome do cliente",
+            "example": "João da Silva"
+          },
+          "cpf": {
+            "type": "string",
+            "description": "CPF do cliente",
+            "example": "12345678910"
+          },
+          "email": {
+            "type": "string",
+            "description": "E-mail do cliente",
+            "format": "email",
+            "example": "joao.silva@gmail.com"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "A data que o cliente foi criado.",
+            "format": "date-time",
+            "example": "2024-01-29 20:24:13"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "cpf",
+          "email"
+        ]
+      }
+    }
+  }
+}

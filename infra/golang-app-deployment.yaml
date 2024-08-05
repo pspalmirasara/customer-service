@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: customer-service
+  labels:
+    app: customer-service
+spec:
+  selector:
+    matchLabels:
+      app: customer-service
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      name: customer-service
+      labels:
+        app: customer-service
+    spec:
+      containers:
+        - name: customer-service
+          image: placeholder_repository_name
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /customers
+              port: 8080
+            periodSeconds: 60
+            failureThreshold: 3
+            initialDelaySeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /customers
+              port: 8080
+            periodSeconds: 20
+            failureThreshold: 5
+            initialDelaySeconds: 3
+          resources:
+            requests:
+              cpu: 8m
+            limits:
+              cpu: 8m
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-customer-service
+                  key: POSTGRES_DB
+            - name: POSTGRES_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-customer-service
+                  key: POSTGRES_HOST
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: secret-customer-service
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: secret-customer-service
+                  key: POSTGRES_PASSWORD
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: secret-customer-service
+                  key: JWT_SECRET
+            - name: JWT_ISSUER
+              valueFrom:
+                secretKeyRef:
+                  name: secret-customer-service
+                  key: JWT_ISSUER
